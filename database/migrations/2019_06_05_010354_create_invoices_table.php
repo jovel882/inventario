@@ -16,6 +16,8 @@ class CreateInvoicesTable extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->comment("Es el cliente dueño de esta factura.");
+            $table->decimal("total",20,2)->nullable(false)->comment("Maximo 17 digitos con 2 decimas de precision.")->default(0);
+            $table->date("date")->nullable(false);
             $table->timestamps();
             $table->softDeletes();
             $table->index('user_id');
@@ -28,7 +30,8 @@ class CreateInvoicesTable extends Migration
             $table->unsignedInteger('invoice_id')->nullable(false);
             $table->unsignedInteger('order_product_id')->nullable(false);
             $table->unsignedSmallInteger("quantity")->comment("Maximo 32767")->nullable(false);
-            $table->float("price",10,2)->nullable(false)->comment("Maximo 10 digitos don decimas de precision.");
+            $table->decimal("price",13,2)->nullable(false)->comment("Maximo 10 digitos con 2 decimas de precision.");
+            $table->decimal("total",20,2)->nullable(false)->comment("Maximo 17 digitos con 2 decimas de precision.")->default(0);
             $table->timestamps();
             $table->primary(['invoice_id', 'order_product_id']);
             $table->index('invoice_id');
@@ -51,7 +54,9 @@ class CreateInvoicesTable extends Migration
      */
     public function down()
     {
+        DB::statement("SET FOREIGN_KEY_CHECKS=0");
         Schema::dropIfExists('invoices');
         Schema::dropIfExists('invoice_order_product');
+        DB::statement("SET FOREIGN_KEY_CHECKS=1");
     }
 }

@@ -16,6 +16,7 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->comment("Es el proveedor dueño de esta orden.");
+            $table->date("date")->nullable(false);
             $table->timestamps();
             $table->softDeletes();
             $table->index('user_id');
@@ -29,10 +30,12 @@ class CreateOrdersTable extends Migration
             $table->unsignedInteger('order_id')->nullable(false);
             $table->unsignedInteger('product_id')->nullable(false);
             $table->unsignedSmallInteger("quantity")->comment("Maximo 32767")->nullable(false);
+            $table->unsignedSmallInteger("quantity_available")->comment("Maximo 32767")->nullable(false);
             $table->string('lote')->nullable(false);
             $table->date("expiry_date");
-            $table->float("price",10,2)->nullable(false)->comment("Maximo 10 digitos don decimas de precision.");
+            $table->decimal("price",13,2)->nullable(false)->comment("Maximo 10 digitos don decimas de precision.");
             $table->timestamps();
+            $table->softDeletes();
             $table->index('order_id');
             $table->index('product_id');
             $table->foreign('order_id')
@@ -54,7 +57,9 @@ class CreateOrdersTable extends Migration
      */
     public function down()
     {
+        DB::statement("SET FOREIGN_KEY_CHECKS=0");
         Schema::dropIfExists('orders');
         Schema::dropIfExists('order_products');
+        DB::statement("SET FOREIGN_KEY_CHECKS=1");
     }
 }

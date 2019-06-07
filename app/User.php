@@ -36,4 +36,8 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Order');
     }    
+    public static function getProviders()
+    {
+        return self::whereHas("roles", function($q){ $q->where("name", "Provider"); })->get();
+    }    
 }
